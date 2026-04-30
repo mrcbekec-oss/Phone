@@ -50,6 +50,15 @@ body {
     box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
 }
 
+.phone-model {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    letter-spacing: 2px;
+}
+
 .screen {
     width: 100%;
     height: 200px;
@@ -146,6 +155,27 @@ body {
     align-items: center;
     font-size: 14px;
     font-weight: bold;
+}
+
+.processor.infected {
+    border-color: var(--error-color);
+    background: rgba(239, 68, 68, 0.2);
+    animation: glitch 0.3s infinite alternate;
+}
+.processor.infected::after {
+    content: '☠';
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: var(--error-color);
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
 }
 
 .phone-controls {

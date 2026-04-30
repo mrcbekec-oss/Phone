@@ -1,18 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Veri Modelleri
     const processorsData = [
-        { id: 'proc-1', name: 'CPU', requiredFile: 'CPU_SYS', currentFile: null },
-        { id: 'proc-2', name: 'GPU', requiredFile: 'GPU_SYS', currentFile: null },
-        { id: 'proc-3', name: 'NPU', requiredFile: 'NPU_SYS', currentFile: null }
+        { id: 'proc-1', name: 'CPU', currentFile: null },
+        { id: 'proc-2', name: 'GPU', currentFile: null },
+        { id: 'proc-3', name: 'NPU', currentFile: null },
+        { id: 'proc-4', name: 'RAM', currentFile: null },
+        { id: 'proc-5', name: 'SSD', currentFile: null },
+        { id: 'proc-6', name: 'Wi-Fi', currentFile: null }
     ];
 
-    const filesData = [
-        { id: 'file-1', type: 'CPU_SYS', realName: 'İşlemci Sistem Dosyası (CPU)' },
-        { id: 'file-2', type: 'GPU_SYS', realName: 'Grafik Sistem Dosyası (GPU)' },
-        { id: 'file-3', type: 'NPU_SYS', realName: 'Yapay Zeka Sistem Dosyası (NPU)' },
-        { id: 'file-4', type: 'CORRUPT_1', realName: 'Truva Atı (Virüs)' },
-        { id: 'file-5', type: 'CORRUPT_2', realName: 'Bozuk Veri Kümesi' }
-    ];
+    // 15 adet dosya olustur (6 sağlam, 5 virüs, 4 bozuk)
+    const filesData = [];
+    for(let i=0; i<6; i++) filesData.push({ id: `file-safe-${i}`, type: 'SAFE', desc: 'Sağlam Sistem Dosyası' });
+    for(let i=0; i<5; i++) filesData.push({ id: `file-virus-${i}`, type: 'VIRUS', desc: 'Zararlı Yazılım (Virüs)' });
+    for(let i=0; i<4; i++) filesData.push({ id: `file-broken-${i}`, type: 'BROKEN', desc: 'Bozuk Veri Kümesi' });
 
     // DOM Elementleri
     const motherboard = document.getElementById('motherboard');
@@ -45,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
         contextCheck.addEventListener('click', () => {
             if (selectedFileForContext) {
                 const fileObj = filesData.find(f => f.id === selectedFileForContext.id);
-                alert(`Dosya Analizi:\nBu dosyanın asıl içeriği: ${fileObj.realName}`);
+                alert(`Dosya Analizi:\nSonuç: ${fileObj.desc}`);
             }
             closeContextMenu();
         });
@@ -60,12 +61,20 @@ document.addEventListener('DOMContentLoaded', () => {
         // Düzelt Butonu
         fixBtn.addEventListener('click', () => {
             if (selectedProcessorId) {
+                const procObj = processorsData.find(p => p.id === selectedProcessorId);
                 const procElement = document.getElementById(selectedProcessorId);
+                
+                // Eğer parça virüslü veya bozuksa, içini temizle (Virüs temizleme mekaniği)
+                procObj.currentFile = null;
+                procElement.classList.remove('infected', 'fixed', 'broken');
+                procElement.innerText = procObj.name;
+
                 // Önceki tüm fix modları temizle
                 document.querySelectorAll('.processor').forEach(p => p.classList.remove('fix-mode'));
+                
                 // Seçilene ekle
                 procElement.classList.add('fix-mode');
-                selectedProcessorInfo.innerText = `${processorsData.find(p => p.id === selectedProcessorId).name} - Bekleniyor... (Dosya Sürükleyin)`;
+                selectedProcessorInfo.innerText = `${procObj.name} - Bekleniyor... (Dosya Sürükleyin)`;
             }
         });
 
@@ -88,7 +97,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.querySelectorAll('.processor').forEach(p => p.classList.remove('selected'));
                 div.classList.add('selected');
                 selectedProcessorId = proc.id;
-                selectedProcessorInfo.innerText = `Seçilen: ${proc.name} (Bozuk)`;
+                
+                if (proc.currentFile === 'VIRUS') {
+                    selectedProcessorInfo.innerText = `Seçilen: ${proc.name} (VİRÜS BULAŞMIŞ!)`;
+                } else if (proc.currentFile === 'SAFE') {
+                    selectedProcessorInfo.innerText = `Seçilen: ${proc.name} (Çalışıyor)`;
+                } else {
+                    selectedProcessorInfo.innerText = `Seçilen: ${proc.name} (Bozuk/Boş)`;
+                }
+                
                 fixBtn.disabled = false;
             });
 
@@ -104,14 +121,26 @@ document.addEventListener('DOMContentLoaded', () => {
                     const fileObj = filesData.find(f => f.id === fileId);
                     if (fileObj) {
                         proc.currentFile = fileObj.type;
-                        div.classList.remove('broken', 'fix-mode');
-                        div.classList.add('fixed');
-                        div.innerText = `${proc.name}\n(Dosya Yüklendi)`;
-                        selectedProcessorInfo.innerText = `${proc.name} - Dosya atandı.`;
+                        div.classList.remove('fix-mode', 'broken', 'fixed', 'infected');
+                        
+                        if (fileObj.type === 'VIRUS') {
+                            div.classList.add('infected');
+                            div.innerText = `${proc.name}\n(VİRÜS!)`;
+                            selectedProcessorInfo.innerText = `${proc.name} - VİRÜS BULAŞTI!`;
+                        } else if (fileObj.type === 'SAFE') {
+                            div.classList.add('fixed');
+                            div.innerText = `${proc.name}\n(Hazır)`;
+                            selectedProcessorInfo.innerText = `${proc.name} - Sistem kuruldu.`;
+                        } else {
+                            div.classList.add('broken');
+                            div.innerText = `${proc.name}\n(Bozuk)`;
+                            selectedProcessorInfo.innerText = `${proc.name} - Bozuk dosya atandı.`;
+                        }
+                        
                         fixBtn.disabled = true;
                     }
                 } else {
-                    alert("Önce işlemciyi seçip 'Düzelt' tuşuna basmalısınız!");
+                    alert("Önce donanımı seçip 'Düzelt' tuşuna basmalısınız!");
                 }
             });
 
@@ -176,13 +205,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     hasError = true;
                     errorMsg = `HATA: ${proc.name} eksik dosya.`;
                     break;
-                } else if (proc.currentFile !== proc.requiredFile) {
+                } else if (proc.currentFile === 'VIRUS') {
                     hasError = true;
-                    if (proc.currentFile.startsWith('CORRUPT')) {
-                        errorMsg = `KRİTİK HATA: ${proc.name} donanımına zararlı yazılım bulaştı!`;
-                    } else {
-                        errorMsg = `UYUMSUZLUK HATASI: ${proc.name} donanımına yanlış sürücü yüklendi!`;
-                    }
+                    errorMsg = `KRİTİK HATA: ${proc.name} donanımına virüs bulaştı!`;
+                    break;
+                } else if (proc.currentFile === 'BROKEN') {
+                    hasError = true;
+                    errorMsg = `UYUMSUZLUK HATASI: ${proc.name} donanımına bozuk dosya yüklendi!`;
                     break;
                 }
             }
