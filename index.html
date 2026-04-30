@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telefon Tamir Simülatörü</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <!-- Telefon -->
+        <div class="phone">
+            <div class="screen" id="phone-screen">
+                <div class="screen-content" id="screen-message">
+                    <span>SİSTEM ÇEVRİMDIŞI</span>
+                </div>
+            </div>
+            
+            <div class="motherboard" id="motherboard">
+                <!-- İşlemciler JS ile eklenecek -->
+            </div>
+            
+            <div class="phone-controls">
+                <button id="run-btn" class="btn primary-btn">Telefonu Çalıştır</button>
+            </div>
+        </div>
+
+        <!-- Yan Panel (Dosyalar ve Kontroller) -->
+        <div class="side-panel">
+            <h2>Sistem Dosyaları</h2>
+            <div class="files-container" id="files-container">
+                <!-- Dosyalar JS ile eklenecek -->
+            </div>
+            
+            <div class="actions-panel">
+                <h3>İşlemci Kontrolü</h3>
+                <p id="selected-processor-info">İşlemci Seçilmedi</p>
+                <button id="fix-btn" class="btn secondary-btn" disabled>Düzelt</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Context Menu (Dosya için) -->
+    <div id="file-context-menu" class="context-menu hidden">
+        <button id="context-check">Kontrol Et</button>
+        <button id="context-cancel">İptal</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
